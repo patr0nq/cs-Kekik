@@ -3,7 +3,7 @@ version = 1
 cloudstream {
     authors     = listOf("patr0n")
     language    = "tr"
-    description = "patr0nTV"
+    description = "ipTvSevenler"
 
     /**
      * Status int as the following:
