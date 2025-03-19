@@ -8,68 +8,30 @@ import com.lagradost.cloudstream3.utils.AppUtils.parseJson
 
 @CloudstreamPlugin
 class HuhuPlugin : Plugin() {
+    // Sadece Türkiye'yi içeren sabit bir harita
     private var countries = mapOf(
-        "Germany" to true,
-        "Albania" to true,
-        "France" to true,
-        "Balkans" to true,
-        "Turkey" to true,
-        "Portugal" to true,
-        "Poland" to true,
-        "Italy" to true,
-        "United Kingdom" to true,
-        "Romania" to true,
-        "Arabia" to true,
-        "Russia" to true,
-        "Spain" to true,
-        "Bulgaria" to true,
-        "Netherlands" to true,
+        "Turkey" to true // Sadece Türkiye aktif
     )
+
+    // Sadece Türkiye'nin dil kodunu içeren harita
     private val countriesToLang = mapOf(
-        "Germany" to "de",
-        "Albania" to "al",
-        "France" to "fr",
-        "Balkans" to "i don't wanna upset anyone",
-        "Turkey" to "tr",
-        "Portugal" to "pt",
-        "Poland" to "pl",
-        "Italy" to "it",
-        "United Kingdom" to "uk",
-        "Romania" to "ro",
-        "Arabia" to "sa",
-        "Russia" to "ru",
-        "Spain" to "es",
-        "Bulgaria" to "bg",
-        "Netherlands" to "nl",
+        "Turkey" to "tr" // Türkiye'nin dil kodu
     )
 
     override fun load(context: Context) {
         // Preferences
         val sharedPref = context.getSharedPreferences("Huhu", Context.MODE_PRIVATE)
 
-        val savedContries = let {
-            val c = sharedPref.getString("countries", "")
-            if (!c.isNullOrEmpty()) {
-                parseJson<Map<String, Boolean>>(c)
-            } else {
-                null
-            }
-        }
+        // Domain'i al (varsayılan olarak "huhu.to")
         val domain = sharedPref.getString("domain", "huhu.to") ?: "huhu.to"
 
-        val lang = savedContries?.let {
-            val enabledCountries = it.filter { pair -> pair.value }
-            if (enabledCountries.size == 1) {
-                countriesToLang[enabledCountries.keys.first()]
-            } else {
-                "un"
-            }
-        } ?: "un"
+        // Dil kodunu sabit olarak "tr" (Türkçe) yap
+        val lang = "tr"
 
-        // Register Plugin
-        registerMainAPI(Huhu(domain, savedContries ?: countries, lang))
+        // Plugin'i kaydet
+        registerMainAPI(Huhu(domain, countries, lang))
 
-        // Enable settings
+        // Ayarları etkinleştir
         val activity = context as AppCompatActivity
         openSettings = {
             val frag = Settings(this, sharedPref, countries)
