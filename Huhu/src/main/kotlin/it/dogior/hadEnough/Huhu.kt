@@ -30,9 +30,10 @@ class Huhu(domain: String, private val countries: Map<String, Boolean>, language
     override val vpnStatus = VPNStatus.MightBeNeeded
 
     private suspend fun getChannels(): List<Channel> {
-        val enabledCountries = countries.filter { it.value }.keys.toList()
+        
         val response = app.get("$mainUrl/channels").body.string()
-        return parseJson<List<Channel>>(response).filter { it.country in enabledCountries }
+        val allChannels = parseJson<List<Channel>>(response)
+        return allChannels.filter { it.country.equals("Turkey", ignoreCase = true) }
     }
 
     companion object {
@@ -47,14 +48,14 @@ class Huhu(domain: String, private val countries: Map<String, Boolean>, language
         if (channels.isEmpty()) {
             channels = getChannels()
         }
-        val sections =
-            channels.groupBy { it.country }.map {
-                HomePageList(
-                    it.key,
-                    it.value.map { channel -> channel.toSearchResponse(this.name) },
-                    false
-                )
-            }.sortedBy { it.name }
+        
+        val sections = listOf(
+            HomePageList(
+                "Türkiye", 
+                channels.map { channel -> channel.toSearchResponse(this.name) },
+                false
+            )
+        )
 
         return newHomePageResponse(
             sections, false
